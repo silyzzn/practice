@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        #container{/*获取盒子*/
+            position: relative;
+            margin: 0px auto;
+            width: 900px;/*总的width=图片的宽度+后面三张图片所折叠产生的宽度*/
+            height: 478px;
+            overflow: hidden;
+        }
+        img{
+            position: absolute;
+            width: 475px;
+            height: 477px;
+            border: solid 1px black;
+        }
+    </style>
+</head>
+<body>
+<div id="container">
+    <img src="door1.png" title="door1" alt="door1">
+    <img src="door2.png" title="door2" alt="door2">
+    <img src="door3.png" title="door3" alt="door3">
+    <img src="door4.png" title="door4" alt="door4">
+</div>
+<script>
+    //加载完成之后
+    window.onload=function(){
+        //获取#container
+        var box=document.getElementById("container");
+        //获取imgs
+        var imgs=box.getElementsByTagName("img");
+        var width=imgs[0].offsetWidth; //通过offsetWidth获取每张图片自身的宽度
+        var tmpwidth=140;//设置叠在一起的图片的宽度
+        function init(){//初始化每张图片的定位。
+            for(var i=0;i<imgs.length;i++){
+                imgs[i].style.left=(i>0?(width+tmpwidth*(i-1)):0)+"px";//第一张图片的left为0，第二张为width+0*tmpwidth，第三张为width+1*tmpwidth，以此类推。
+            }
+        }
+        //调用初始化函数
+        init();
+
+        //计算鼠标滑过时需要移动的图片移动的距离
+        var translate=width-tmpwidth;
+        console.log(translate);
+        console.log(width);
+        console.log(tmpwidth);
+        for(var i=0;i<imgs.length;i++){
+            //使用闭包，为每个图片添加mouseover事件
+            (function(i) {
+                imgs[i].onmouseover = function () {//如果不进行自调用，这里只是声明这个函数
+                    //并没有触发这个事件，所以会一直for循环直到i为4，只会触发第4 张图片
+                    //每次移动先初始化位置
+                    init();
+                    //除了第一张图片之外，第i张图片之前的图片都向左移动translate px。
+                    if (i >= 1) {
+                        //由于imgs[j].style.left是字符串（例如“10px”），使用parseInt把字符串转换为数字（“10px”-》10）
+                        for (var j = 1; j <= i; j++) {
+                            imgs[j].style.left = parseInt(imgs[j].style.left,10) - translate + 'px';
+                        }//这里的10代表的是以十进制转化为整数parseInt(string,10)
+                    }//如果参数是以0x/oX即十六进制，则为16
+                }
+            })(i);//这里为函数的自调用
+        }
+
+
+    }
+</script>
+</body>
+</html>
